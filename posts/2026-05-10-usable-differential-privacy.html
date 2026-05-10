@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Usable Differential Privacy — privability.works</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <a href="/">← Home</a>
+    <h1>Usable Differential Privacy: why tooling and APIs matter</h1>
+    <div class="meta">10 May 2026</div>
+    <p>Differential privacy (DP) offers provable privacy guarantees — but in practice, developers struggle to apply DP correctly. Usability gaps in libraries, unclear defaults, and sparse documentation cause subtle mistakes that can break privacy guarantees or render outputs useless.</p>
+    <h2>Common practical issues</h2>
+    <ul>
+      <li><strong>Choosing ε (epsilon):</strong> developers need clear guidance — small values give more privacy but less utility; trade-offs must be communicated with examples.</li>
+      <li><strong>API ergonomics:</strong> inconsistent function names, required parameters, and missing sensible defaults make accidental misuse likely.</li>
+      <li><strong>Testing & auditing:</strong> DP implementations are stochastic — tooling to detect privacy regressions and to audit outputs is essential.</li>
+    </ul>
+    <h2>What helps</h2>
+    <p>Documentation with practical examples, high-level frameworks (e.g., <a href="https://opendp.org/">OpenDP</a>, <a href="https://github.com/google/differential-privacy">Google DP</a>), and libraries that integrate with familiar ML APIs (e.g., <a href="https://github.com/IBM/differential-privacy-library">IBM diffprivlib</a>) lower the entry barrier.</p>
+    <h2>Get involved</h2>
+    <p>I’m building a community to discuss research, tooling, and reproducible evaluations. If you work on DP libraries, privacy engineering, or usable privacy, join the Discord to share ideas and collaborate: <a href="https://discord.gg/Y8wq6J8RS">Join the Discord</a>.</p>
+    <p>I’ll post notes from talks (NDSS USEC 2026, SOUPS), tutorials, and tooling experiments here — follow the Posts section for updates.</p>
+  </div>
+</body>
+</html>
