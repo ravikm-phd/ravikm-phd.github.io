@@ -7,7 +7,7 @@
   </defs>
   <rect width="1200" height="240" fill="url(#g)" rx="12"/>
   <g fill="#fff" font-family="Georgia, 'Times New Roman', serif">
-    <text x="80" y="110" font-size="44" font-weight="700">Privability Works</text>
+    <text x="80" y="110" font-size="44" font-weight="700">Differential Privacy Works!</text>
     <text x="80" y="155" font-size="18" opacity="0.9">Usability, tooling, and research for Differential Privacy</text>
   </g>
   <g fill="#ffffff" opacity="0.06">
