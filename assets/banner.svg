@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#0b3d91"/>
+      <stop offset="1" stop-color="#006a4e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="240" fill="url(#g)" rx="12"/>
+  <g fill="#fff" font-family="Georgia, 'Times New Roman', serif">
+    <text x="80" y="110" font-size="44" font-weight="700">Privability Works</text>
+    <text x="80" y="155" font-size="18" opacity="0.9">Usability, tooling, and research for Differential Privacy</text>
+  </g>
+  <g fill="#ffffff" opacity="0.06">
+    <circle cx="980" cy="60" r="60"/>
+    <circle cx="1050" cy="160" r="40"/>
+    <circle cx="880" cy="40" r="30"/>
+  </g>
+</svg>

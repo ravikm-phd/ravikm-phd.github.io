@@ -1,14 +1,22 @@
-:root{--bg:#fff;--fg:#111;--accent:#0b3d91}
+:root{
+  --bg:#f6fbfb; --card:#ffffff; --text:#0f1724; --muted:#6b7280; --accent:#0b3d91; --accent-2:#00a884;
+}
 *{box-sizing:border-box}
-html,body{height:100%}
-body{font-family: Georgia, 'Times New Roman', serif;margin:0;color:var(--fg);background:var(--bg);line-height:1.5}
-.container{max-width:760px;margin:6vh auto;padding:0 20px}
-.header{display:flex;align-items:baseline;gap:20px}
-h1{font-size:28px;margin:0}
-nav{margin-top:8px}
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,#f6fbfb 0%, #eef7f6 100%); color:var(--text);}
+.container{max-width:980px;margin:32px auto;padding:20px}
+.header{display:flex;align-items:center;gap:18px}
+.logo{width:72px;height:72px;border-radius:10px;box-shadow:0 6px 18px rgba(11,61,145,0.12)}
+h1{font-family:Georgia, 'Times New Roman', serif;font-size:28px;margin:0}
+.meta{color:var(--muted);margin-top:6px}
+nav{margin-top:10px}
 a{color:var(--accent);text-decoration:none}
-.post-list{margin-top:28px}
-.post{padding:18px 0;border-top:1px solid #eee}
-.meta{color:#666;font-size:0.9rem}
-.footer{margin-top:56px;color:#666;font-size:0.9rem}
-.button{display:inline-block;padding:8px 12px;border:1px solid var(--accent);color:var(--accent);border-radius:4px}
+.button{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:8px 12px;border-radius:8px;border:none;text-decoration:none}
+.post-list{margin-top:26px}
+.post{background:var(--card);border-radius:10px;padding:16px;margin:16px 0;box-shadow:0 8px 24px rgba(12,38,63,0.06)}
+.post h2{margin:0 0 6px 0}
+.meta-small{color:var(--muted);font-size:0.9rem}
+.footer{margin-top:40px;color:var(--muted);font-size:0.9rem}
+.banner{width:100%;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(2,6,23,0.08);margin-bottom:18px}
+.grid{display:grid;grid-template-columns:1fr 300px;gap:20px}
+.card{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
+@media(max-width:900px){.grid{grid-template-columns:1fr} .logo{width:56px;height:56px}}
