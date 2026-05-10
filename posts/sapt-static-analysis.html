@@ -5,49 +5,158 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Static analysis of Differential Privacy Guarantees</title>
 <link rel="stylesheet" href="/style.css">
+<style>
+.example{border:1px solid #e6e6e6;padding:12px;margin:12px 0;background:#fff}
+.example textarea{width:100%;height:160px;font-family:monospace;padding:8px}
+.run-btn{margin-top:8px}
+.result{background:#f7f7f9;border:1px solid #eee;padding:10px;margin-top:8px;font-family:monospace}
+.bad{color:#b00020}
+.warn{color:#b56d00}
+.good{color:#177e16}
+</style>
 </head>
 <body>
   <div class="container">
     <a href="/">← Home</a>
     <h1>Static analysis of Differential Privacy Guarantees</h1>
-    <div class="meta">Adapted from SAPT framework — updated for Differential Privacy (DP)</div>
-    <p>This page presents a static-analysis-oriented policy framework for assessing whether code and configurations preserve differential privacy guarantees. It adapts ideas from static application privacy testing (SAPT) and focuses on DP-specific checks that help detect common issues before deployment.</p>
+    <div class="meta">Interactive examples: click Run to perform quick static checks on example snippets</div>
 
-    <h2>Why static analysis for DP?</h2>
-    <p>Differential privacy relies on correct usage of algorithms, parameters (notably ε), and runtime constraints (e.g., bounding, sampling). Many DP failures arise from API misuse, missing bounds, or incorrect composition of mechanisms. Static analysis can catch many of these issues early in the development lifecycle.</p>
+    <p>This interactive playground performs lightweight static checks on JavaScript/Python-like snippets to illustrate how automated analyzers can spot common DP issues: high epsilon values, missing bounds/sensitivity, and unchecked composition.</p>
 
-    <h2>Key checks and rules</h2>
-    <ul>
-      <li><strong>ε (epsilon) hard-coded or unreasonably large:</strong> flag instances where ε is set to a value that exceeds recommended thresholds or is supplied as an unconstrained user input.</li>
-      <li><strong>Missing or unbounded sensitivity/bounds:</strong> detect numeric queries where required bounds (min/max) are not supplied before applying DP mechanisms.</li>
-      <li><strong>Unchecked composition:</strong> track per-query privacy budget use to warn when multiple mechanisms accumulate privacy loss without accounting.</li>
-      <li><strong>Use of non-DP primitives:</strong> identify outputs that are combined with DP outputs without protecting their joint contribution.</li>
-      <li><strong>Default/unsafe parameters:</strong> detect APIs called without explicit parameters that rely on insecure defaults.</li>
-      <li><strong>Randomness seeds and determinism:</strong> flag uses that may undermine intended randomness or correlate releases across runs.</li>
-    </ul>
+    <h2>How it works (brief)</h2>
+    <p>The checks run simple pattern matching and numeric extraction. They are not a substitute for formal verification — but they surface easy-to-find mistakes that static analyzers should flag.</p>
 
-    <h2>How a tool can work</h2>
-    <p>A static analysis tool for DP performs AST-level checks, taint-tracking for privacy budget variables, and a small policy language to express rules (e.g., "all calls to add_laplace must have bounded inputs"). Integrations with CI can block PRs when high-risk patterns are introduced.</p>
+    <h2>Example 1 — Insecure usage (no bounds, large epsilon)</h2>
+    <div class="example">
+      <textarea id="ex1">// JavaScript-like example
+const epsilon = 10;
+// compute count
+const result = add_laplace(count, epsilon);
+console.log(result);</textarea>
+      <button class="run-btn" onclick="runCheck('ex1','out1')">Run</button>
+      <div id="out1" class="result" aria-live="polite"></div>
+    </div>
 
-    <h2>Example checks (pseudo rules)</h2>
-    <pre><code>// flag: epsilon too large
-if (epsilon > 1.0) WARN("epsilon greater than 1: privacy risk")
+    <h2>Example 2 — Better usage (bounds and reasonable epsilon)</h2>
+    <div class="example">
+      <textarea id="ex2"># Python-like example
+epsilon = 0.1
+lower, upper = 0, 100
+noisy_count = add_laplace(count, bounds=(lower,upper), epsilon=epsilon)
+print(noisy_count)</textarea>
+      <button class="run-btn" onclick="runCheck('ex2','out2')">Run</button>
+      <div id="out2" class="result" aria-live="polite"></div>
+    </div>
 
-// require bounds before noisy count
-if (!has_bounds(query)) ERROR("Missing bounds for DP mechanism")
+    <h2>Example 3 — Composition tracking</h2>
+    <div class="example">
+      <textarea id="ex3">// Multiple queries with epsilons
+epsilon1 = 0.6
+r1 = noisy_sum(data1, epsilon=epsilon1)
+epsilon2 = 0.7
+r2 = noisy_mean(data2, epsilon=epsilon2)
+// composition: total epsilon = epsilon1 + epsilon2
+</textarea>
+      <button class="run-btn" onclick="runCheck('ex3','out3')">Run</button>
+      <div id="out3" class="result" aria-live="polite"></div>
+    </div>
 
-// composition: track budget variable
-budget += epsilon
-if (budget > BUDGET_LIMIT) ERROR("Privacy budget exhausted")
-</code></pre>
+    <h2>Custom snippet</h2>
+    <div class="example">
+      <textarea id="exCustom">// Paste your code here and click Run</textarea>
+      <button class="run-btn" onclick="runCheck('exCustom','outCustom')">Run</button>
+      <div id="outCustom" class="result" aria-live="polite"></div>
+    </div>
 
-    <h2>Limitations of static analysis</h2>
-    <p>Static checks cannot prove end-to-end DP in all cases because privacy depends on runtime data distributions and sampling. Static tools are best at finding clear misuse, missing protections, and easy-to-spot composition errors. Combine static analysis with testing, auditing, and formal verification where appropriate.</p>
-
-    <h2>Call to action</h2>
-    <p>If you are building DP libraries or tools, consider adding a lightweight static verifier to your CI pipeline. Join the discussion on Discord: <a href="https://discord.gg/bbJQppWjr">https://discord.gg/bbJQppWjr</a></p>
+    <h2>Limitations</h2>
+    <p>This client-side checker demonstrates concepts only. For CI/PR enforcement, integrate server-side analysis that builds ASTs, performs taint analysis, and tracks symbolic budgets.</p>
 
     <footer class="footer">Published on privability.works</footer>
   </div>
+
+<script>
+function extractNumbers(text){
+  const nums = [];
+  const re = /([Ee]psilon|epsilon)\s*[=:]?\s*([0-9]*\.?[0-9]+(?:e[-+]?[0-9]+)?)/g;
+  let m;
+  while((m=re.exec(text))){ nums.push(parseFloat(m[2])); }
+  // also match direct numeric literals in function calls like add_laplace(..., 0.5)
+  const re2 = /[,(]\s*([0-9]*\.?[0-9]+(?:e[-+]?[0-9]+)?)\s*[,)\s]/g;
+  while((m=re2.exec(text))){ nums.push(parseFloat(m[1])); }
+  return nums;
+}
+
+function hasBounds(text){
+  // heuristic: look for 'bounds' or 'lower'/'upper' or tuple-like (0,100)
+  if(/bounds\s*=/.test(text) || /bounds\s*[:=]/.test(text)) return true;
+  if(/lower|upper|min|max|bounds|\(\s*\d+\s*,\s*\d+\s*\)/i.test(text)) return true;
+  return false;
+}
+
+function findEpsilons(text){
+  const eps = [];
+  const re = /([Ee]psilon|epsilon)\s*[=:]?\s*([0-9]*\.?[0-9]+(?:e[-+]?[0-9]+)?)/g;
+  let m;
+  while((m=re.exec(text))){ eps.push({raw:m[0], value:parseFloat(m[2]), index:m.index}); }
+  // also find named args like epsilon=0.5 inside function calls
+  const re2 = /epsilon\s*=\s*([0-9]*\.?[0-9]+(?:e[-+]?[0-9]+)?)/g;
+  while((m=re2.exec(text))){ eps.push({raw:m[0], value:parseFloat(m[1]), index:m.index}); }
+  return eps;
+}
+
+function findDPCalls(text){
+  // simple list of common DP function names
+  const dpFns = ['add_laplace','add_gaussian','noisy_sum','noisy_mean','noisy_count','laplace_mechanism','gaussian_mechanism'];
+  const found = [];
+  dpFns.forEach(fn=>{ const re = new RegExp(fn+'\\s*\\(','i'); if(re.test(text)) found.push(fn); });
+  return found;
+}
+
+function runCheck(textId, outId){
+  const text = document.getElementById(textId).value;
+  const out = document.getElementById(outId);
+  const eps = findEpsilons(text);
+  const dpCalls = findDPCalls(text);
+  let totalEps = 0;
+  let notes = [];
+  if(eps.length===0){ notes.push({type:'warn',msg:'No explicit epsilon found. Calls may rely on defaults.'}); }
+  else{
+    eps.forEach(e=>{
+      totalEps += e.value;
+      if(e.value>1){ notes.push({type:'bad',msg:`Found epsilon = ${e.value} — this is large; privacy risk.`}); }
+      else if(e.value>0.1){ notes.push({type:'warn',msg:`Found epsilon = ${e.value} — moderate; consider smaller value or justification.`}); }
+      else{ notes.push({type:'good',msg:`Found epsilon = ${e.value} — typical conservative value.`}); }
+    });
+  }
+  // composition
+  if(eps.length>1){
+    if(totalEps>1){ notes.push({type:'bad',msg:`Composition: total epsilon = ${totalEps} — exceeds 1 (example threshold).`}); }
+    else{ notes.push({type:'warn',msg:`Composition: total epsilon = ${totalEps}. Track budget across queries.`}); }
+  }
+  // bounds
+  if(dpCalls.length>0){
+    if(!hasBounds(text)){
+      notes.push({type:'bad',msg:'DP function calls detected but no bounds/sensitivity found — inputs should be bounded.'});
+    } else{
+      notes.push({type:'good',msg:'Bounds or sensitivity-like variables detected.'});
+    }
+  } else{
+    notes.push({type:'warn',msg:'No DP-specific function calls detected; confirm whether outputs need protection.'});
+  }
+
+  // Randomness seed check
+  if(/seed\s*=/.test(text)) notes.push({type:'warn',msg:'Random seed detected — ensure seeds do not cause deterministic leakage across runs.'});
+
+  // Build output HTML
+  let html = '';
+  html += '<div>Checks run: ' + new Date().toLocaleString() + '</div>';
+  html += '<ul>'; 
+  notes.forEach(n=>{ html += `<li class="${n.type}">${n.msg}</li>`; });
+  html += '</ul>';
+  html += `<div>Detected DP functions: ${dpCalls.length?dpCalls.join(', '):'none'}</div>`;
+  if(eps.length) html += `<div>Total epsilon sum (heuristic): ${totalEps}</div>`;
+  out.innerHTML = html;
+}
+</script>
 </body>
 </html>
