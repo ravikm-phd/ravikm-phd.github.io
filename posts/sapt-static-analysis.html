@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Static analysis of Differential Privacy Guarantees</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <a href="/">← Home</a>
+    <h1>Static analysis of Differential Privacy Guarantees</h1>
+    <div class="meta">Adapted from SAPT framework — updated for Differential Privacy (DP)</div>
+    <p>This page presents a static-analysis-oriented policy framework for assessing whether code and configurations preserve differential privacy guarantees. It adapts ideas from static application privacy testing (SAPT) and focuses on DP-specific checks that help detect common issues before deployment.</p>
+
+    <h2>Why static analysis for DP?</h2>
+    <p>Differential privacy relies on correct usage of algorithms, parameters (notably ε), and runtime constraints (e.g., bounding, sampling). Many DP failures arise from API misuse, missing bounds, or incorrect composition of mechanisms. Static analysis can catch many of these issues early in the development lifecycle.</p>
+
+    <h2>Key checks and rules</h2>
+    <ul>
+      <li><strong>ε (epsilon) hard-coded or unreasonably large:</strong> flag instances where ε is set to a value that exceeds recommended thresholds or is supplied as an unconstrained user input.</li>
+      <li><strong>Missing or unbounded sensitivity/bounds:</strong> detect numeric queries where required bounds (min/max) are not supplied before applying DP mechanisms.</li>
+      <li><strong>Unchecked composition:</strong> track per-query privacy budget use to warn when multiple mechanisms accumulate privacy loss without accounting.</li>
+      <li><strong>Use of non-DP primitives:</strong> identify outputs that are combined with DP outputs without protecting their joint contribution.</li>
+      <li><strong>Default/unsafe parameters:</strong> detect APIs called without explicit parameters that rely on insecure defaults.</li>
+      <li><strong>Randomness seeds and determinism:</strong> flag uses that may undermine intended randomness or correlate releases across runs.</li>
+    </ul>
+
+    <h2>How a tool can work</h2>
+    <p>A static analysis tool for DP performs AST-level checks, taint-tracking for privacy budget variables, and a small policy language to express rules (e.g., "all calls to add_laplace must have bounded inputs"). Integrations with CI can block PRs when high-risk patterns are introduced.</p>
+
+    <h2>Example checks (pseudo rules)</h2>
+    <pre><code>// flag: epsilon too large
+if (epsilon > 1.0) WARN("epsilon greater than 1: privacy risk")
+
+// require bounds before noisy count
+if (!has_bounds(query)) ERROR("Missing bounds for DP mechanism")
+
+// composition: track budget variable
+budget += epsilon
+if (budget > BUDGET_LIMIT) ERROR("Privacy budget exhausted")
+</code></pre>
+
+    <h2>Limitations of static analysis</h2>
+    <p>Static checks cannot prove end-to-end DP in all cases because privacy depends on runtime data distributions and sampling. Static tools are best at finding clear misuse, missing protections, and easy-to-spot composition errors. Combine static analysis with testing, auditing, and formal verification where appropriate.</p>
+
+    <h2>Call to action</h2>
+    <p>If you are building DP libraries or tools, consider adding a lightweight static verifier to your CI pipeline. Join the discussion on Discord: <a href="https://discord.gg/bbJQppWjr">https://discord.gg/bbJQppWjr</a></p>
+
+    <footer class="footer">Published on privability.works</footer>
+  </div>
+</body>
+</html>
