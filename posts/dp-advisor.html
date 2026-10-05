@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DP-Advice Dashboard | NIST SP 800-226 &amp; W3C Privacy Principles</title>
+  <title>DP Security Advice Framework | NIST SP 800-226 &amp; W3C Privacy Principles</title>
   <meta name="description" content="Interactive, fully client-side differential privacy sandbox: multi-mechanism noise generation, a session privacy-budget accountant, an AspectJ-style advice pipeline, and an AST-based NIST SP 800-226 code linter running in your browser via Pyodide.">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
@@ -304,8 +304,21 @@ body.light-theme {
     radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.06) 0px, transparent 50%),
     radial-gradient(at 100% 100%, rgba(2, 132, 199, 0.05) 0px, transparent 50%);
 }
-body.light-theme h1, body.light-theme .card-title { color: #0f172a; }
-body.light-theme .subtitle { color: #475569; }
+/* h1 uses a gradient + -webkit-text-fill-color:transparent in dark mode, which
+   renders invisible on a light background — reset it so the title stays legible. */
+body.light-theme h1 { background: none; -webkit-background-clip: border-box; -webkit-text-fill-color: #0f172a; color: #0f172a; }
+body.light-theme .card-title { color: #0f172a; }
+body.light-theme .subtitle { color: #334155; }
+body.light-theme .badge { background: rgba(79, 70, 229, 0.1); border-color: rgba(79, 70, 229, 0.45); color: #3730a3; }
+body.light-theme .badge-purple { background: rgba(147, 51, 234, 0.1); border-color: rgba(147, 51, 234, 0.45); color: #6b21a8; }
+body.light-theme .metric-lbl { color: #334155; }
+body.light-theme .progress-label-row { color: #334155; }
+body.light-theme .engine-note { color: #334155; }
+body.light-theme label { color: #334155; }
+/* references card uses hard-coded dark inline backgrounds/colors; override them for light mode */
+body.light-theme .ref-box { background: #ffffff !important; border-color: #cbd5e1 !important; }
+body.light-theme .ref-box div { color: #334155 !important; }
+body.light-theme .ref-box a { color: #4338ca !important; }
 body.light-theme .card { background: #ffffff; border-color: #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); }
 body.light-theme .card-header { border-bottom-color: #e2e8f0; }
 body.light-theme input, body.light-theme select, body.light-theme textarea { background-color: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
@@ -350,8 +363,8 @@ body.light-theme .log-table tr:hover td { background: #f1f5f9; }
     <div class="brand">
       <div class="brand-icon">DP</div>
       <div>
-        <h1>DP-Advice Security Framework</h1>
-        <div class="subtitle">Interception Engine with LispWorks Defadvice Combinators, NIST SP 800-226 &amp; W3C Privacy Principles</div>
+        <h1>DP Security Advice Framework</h1>
+        <div class="subtitle">Interception Engine with NIST SP 800-226 &amp; W3C Privacy Principles</div>
       </div>
     </div>
     <div class="badge-row" style="display: flex; align-items: center; gap: 0.75rem;">
@@ -465,8 +478,8 @@ body.light-theme .log-table tr:hover td { background: #f1f5f9; }
     </div>
   </div>
 
-  <!-- Mathematical Formula & Instantized Calculations Card -->
-  <div class="card" style="margin-bottom: 1.5rem;">
+  <!-- Mathematical Formula & Instantized Calculations Card (hidden; elements kept in DOM for the sandbox JS) -->
+  <div class="card" style="margin-bottom: 1.5rem; display: none;">
     <div class="card-header">
       <div class="card-title">
         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
